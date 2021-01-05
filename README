@@ -2,8 +2,9 @@
 2. create_mapping.sh 根据tables里内容自动创建pipeline_id的映射关系
 3. delete_tables.sh 删除src_id下的所有表
 4. delete_mapping.sh 删除pipeline_id下的所有映射关系
+5. install_resolver.sh 配置fileResolver
 
 注意：
 1. 使用以上脚本需要先建好库源、pipeline
-2. tables内容为db.table，table可以是*
-3. tables内容可以使用#注释
+2. 以上脚本配置文件格式相同，文件名任意，内容为db.table或db.*，可用#号注释
+3. tables为配置文件模板

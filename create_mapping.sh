@@ -1,15 +1,23 @@
 #!/bin/bash
 
 
-if [ $# -ne 3 ];
+if [ $# -ne 4 ];
 then
-    echo "usage: $0 <src_id> <des_id> <pipeline_id>"
+    echo "usage: $0 <config_file> <src_id> <des_id> <pipeline_id>"
     exit 1
 fi
 
-src_id=$1
-des_id=$2
-pipeline_id=$3
+config_file=$1
+src_id=$2
+des_id=$3
+pipeline_id=$4
+
+if [ ! -f ${config_file} ];
+then
+    echo "Invalid config file[${config_file}]!!!"
+    exit 1
+fi
+
 echo "connecting mysql ..."
 read -p "usr:" mysql_usr
 stty -echo
@@ -48,8 +56,8 @@ function gen_data_media_paire_sql()
     echo $sql >> mapping.sql
 }
 
-rm *.sql temp -f
-for item in `cat tables | grep -Ev "^$|[#;]"`
+rm mapping.sql temp -f
+for item in `cat ${config_file} | grep -Ev "^$|[#;]"`
 do
     db="${item%.*}"
     tab="${item#*.}"

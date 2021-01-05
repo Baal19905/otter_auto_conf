@@ -1,13 +1,21 @@
 #!/bin/bash
 
 
-if [ $# -ne 1 ];
+if [ $# -ne 2 ];
 then
-    echo "usage: $0 <src_id>"
+    echo "usage: $0 <config_file> <src_id>"
     exit 1
 fi
 
-src_id=$1
+config_file=$1
+src_id=$2
+
+if [ ! -f ${config_file} ];
+then
+    echo "Invalid config file[${config_file}]!!!"
+    exit 1
+fi
+
 echo "connecting mysql ..."
 read -p "usr:" mysql_usr
 stty -echo
@@ -15,6 +23,18 @@ read -p "password:" mysql_pwd
 stty echo
 echo
 
-sql="delete from DATA_MEDIA where data_media_source_id=${src_id}"
+rm delete_tables.sql -f
+for item in `cat ${config_file} | grep -Ev "^$|[#;]"`
+do
+    db="${item%.*}"
+    tab="${item#*.}"
+    if [ "$tab" == "*" ];
+    then
+        tab=".*"
+    fi
+    sql="DELETE FROM DATA_MEDIA WHERE DATA_MEDIA_SOURCE_ID=${src_id} AND NAMESPACE='${db}' AND NAME='${tab}';"
+    echo ${sql} >> delete_tables.sql
+    echo "delete table[${db}.${tab}]"
+done
 
-mysql -u${mysql_usr} -p${mysql_pwd} otter -e"${sql}"
+mysql -u${mysql_usr} -p${mysql_pwd} otter < delete_tables.sql
