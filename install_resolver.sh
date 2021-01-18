@@ -65,7 +65,7 @@ function str_to_source_text()
 function gen_update_sql()
 {
     resolver=${resolver/\#\#\#/${source_text}}
-    for item in `cat tables | grep -Ev "^$|[#;]"`
+    for item in `cat ${config_file} | grep -Ev "^$|[#;]"`
     do
         db="${item%.*}"
         tab="${item#*.}"
